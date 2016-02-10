@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  * file: DriverDFA.java
  * author: Weon Yuan
@@ -12,8 +15,9 @@
 public class DriverDFA {
   
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		ManWolf mw = new ManWolf();  // The DFA
+		BufferedReader in =
+		    new BufferedReader(new InputStreamReader(System.in));
 	}
 
 }

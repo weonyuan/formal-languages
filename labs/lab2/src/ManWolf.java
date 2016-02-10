@@ -22,11 +22,18 @@ public class ManWolf {
   private static final int q6 = 6;
   private static final int q7 = 7;
   private static final int q8 = 8;
-  private static final int q9 = 9;
-  private static final int q10 = 10;
+  private static final int q9 = 9;    // accepted state
+  private static final int q10 = 10;  // error state
+  
+  // Constants that represent the movable objects in this problem
+  // which will be used to navigate through the delta array
+  private static final int CABBAGE = 0;
+  private static final int GOAT = 1;
+  private static final int MAN = 2;
+  private static final int WOLF = 3;
   
   // Initialize the current state to the starting state
-  private int currentState = 0;
+  private static int currentState = 0;
   
   /* 
    * Transition function expressed as an array.
@@ -46,10 +53,42 @@ public class ManWolf {
         {q10, q10, q10,  q10}
       };
   
-  static void process(String input) {
+  public static void process(String input) {
     for (int i = 0; i < input.length(); i++) {
-      char c = input.charAt(i++);
-      //currentState = delta[state, c];
+      char c = input.charAt(i);
+      int moveObject = -1;
+      
+      switch(c) {
+        case 'c':
+          moveObject = CABBAGE;
+          break;
+        case 'g':
+          moveObject = GOAT;
+          break;
+        case 'm':
+          moveObject = MAN;
+          break;
+        case 'w':
+          moveObject = WOLF;
+          break;
+        default:
+          break;
+      }
+      try {
+        currentState = delta[currentState][moveObject];
+        System.out.println(c);
+        System.out.println(currentState);
+      } catch (ArrayIndexOutOfBoundsException ex) {
+        currentState = q10;         
+      }
     }
+  }
+  
+  public boolean isCorrect() {
+    return currentState == q9;
+  }
+  
+  public static void main(String[] args) {
+    process("gmcgwmg");
   }
 }
