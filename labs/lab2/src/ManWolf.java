@@ -33,7 +33,17 @@ public class ManWolf {
    */
   static private int[][] delta =
       {
-        {}
+        {q10,  q1, q10,  q10},
+        {q10,  q0,  q2,  q10},
+        { q4, q10,  q1,   q3},
+        {q10,  q5, q10,   q2},
+        { q2,  q6, q10,  q10},
+        { q7,  q3, q10,  q10},
+        {q10,  q4, q10,   q7},
+        { q5, q10,  q8,   q6},
+        {q10,  q9,  q7,  q10},
+        {q10,  q8, q10,  q10},
+        {q10, q10, q10,  q10}
       };
   
   static void process(String input) {
