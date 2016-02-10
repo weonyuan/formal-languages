@@ -53,12 +53,12 @@ public class ManWolf {
         {q10, q10, q10,  q10}
       };
   
-  public static void process(String input) {
+  public void process(String input) {
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
-      int moveObject = -1;
+      int moveObject;
       
-      switch(c) {
+      switch (c) {
         case 'c':
           moveObject = CABBAGE;
           break;
@@ -72,12 +72,11 @@ public class ManWolf {
           moveObject = WOLF;
           break;
         default:
+          moveObject = -1;
           break;
       }
       try {
         currentState = delta[currentState][moveObject];
-        System.out.println(c);
-        System.out.println(currentState);
       } catch (ArrayIndexOutOfBoundsException ex) {
         currentState = q10;         
       }
@@ -86,9 +85,5 @@ public class ManWolf {
   
   public boolean isCorrect() {
     return currentState == q9;
-  }
-  
-  public static void main(String[] args) {
-    process("gmcgwmg");
   }
 }

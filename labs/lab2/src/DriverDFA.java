@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -14,10 +15,26 @@ import java.io.InputStreamReader;
 */
 public class DriverDFA {
   
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	    throws IOException {
 		ManWolf mw = new ManWolf();  // The DFA
-		BufferedReader in =
-		    new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+		  // Read and echo lines until EOF
+	    String s = args[0];
+	    
+		  mw.process(s);
+		  if (mw.isCorrect()) {
+		    System.out.println("This is a solution.");
+		  } else {
+		    System.out.println("This is not a solution."); 
+		  }
+		} catch (ArrayIndexOutOfBoundsException ex) {
+		  System.out.println("Please enter a valid string.");
+		  System.out.println("Usage: java DriverDFA <string>");
+		}
+
+		System.exit(1);
 	}
 
 }
