@@ -27,16 +27,17 @@ public class ManWolf {
   
   // Constants that represent the movable objects in this problem
   // which will be used to navigate through the delta array
+  private static final int ERROR = -1;
   private static final int CABBAGE = 0;
   private static final int GOAT = 1;
-  private static final int MAN = 2;
+  private static final int NOTHING = 2;  // nothing means no items to bring, ironically
   private static final int WOLF = 3;
   
   // Initialize the current state to the starting state
   private static int currentState = 0;
   
   /* 
-   * Transition function expressed as an array.
+   * Transition function expressed as a multi-dimensional array.
    */
   static private int[][] delta =
       {
@@ -53,6 +54,16 @@ public class ManWolf {
         {q10, q10, q10,  q10}
       };
   
+  /**
+   * process
+   * 
+   * This function takes an input that will be scanned character by character
+   * in order to navigate through the delta array.
+   * 
+   * @param input the input string to be processed
+   *   
+   * @return none
+  */
   public void process(String input) {
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
@@ -65,14 +76,14 @@ public class ManWolf {
         case 'g':
           moveObject = GOAT;
           break;
-        case 'm':
-          moveObject = MAN;
+        case 'n':
+          moveObject = NOTHING;
           break;
         case 'w':
           moveObject = WOLF;
           break;
         default:
-          moveObject = -1;
+          moveObject = ERROR;
           break;
       }
       try {
@@ -83,6 +94,15 @@ public class ManWolf {
     }
   }
   
+  /**
+   * isCorrect
+   * 
+   * This function checks to see whether the user has successfully
+   * solved the man-wolf-goat-cabbage problem by landing in an accepted
+   * state.
+   * 
+   * @return boolean Whether the user's current state is in an accepted one
+   */
   public boolean isCorrect() {
     return currentState == q9;
   }

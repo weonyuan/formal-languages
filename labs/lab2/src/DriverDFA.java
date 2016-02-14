@@ -10,17 +10,17 @@ import java.io.InputStreamReader;
  * due date: February 5, 2016
  * version: 1.0
  * 
- * This file contains an abstract class of the man-wolf-goat-cabbage problem.
+ * This file serves as a driver for the user to interact with ManWolf.java.
  * 
 */
 public class DriverDFA {
   
 	public static void main(String[] args)
 	    throws IOException {
-		ManWolf mw = new ManWolf();  // The DFA
+		ManWolf mw = new ManWolf();  // DFA
 		
 		try {
-		  // Read and echo lines until EOF
+		  // Read the input string and process it for validation
 	    String s = args[0];
 	    
 		  mw.process(s);
@@ -30,10 +30,12 @@ public class DriverDFA {
 		    System.out.println("This is not a solution."); 
 		  }
 		} catch (ArrayIndexOutOfBoundsException ex) {
+		  // Called when no parameter (input string) is given
 		  System.out.println("Please enter a valid string.");
 		  System.out.println("Usage: java DriverDFA <string>");
 		}
 
+		// Gracefully exit the program
 		System.exit(1);
 	}
 
