@@ -7,39 +7,39 @@ q4,PrintStatement - non accepting state - waiting for a 't'
 q5,PrintStatement - non accepting state - waiting for a space
 q6,PrintStatement - non accepting state - waiting for a (
 q7,PrintStatement - non accepting state - waiting for a space
-q8,"Expr - non accepting state - waiting for a digit, char, or """
-q9,IntExpr - non accepting state - waiting for a space
-q10,IntExpr - non accepting state - waiting for a + or )
-q11,IntExpr - non accepting state - waiting for a space
-q12,Expr - accepting state
-q13,Identifier - non accepting state - waiting for a space
-q14,Identifier - non accepting state - waiting for a )
-q15,StringExpr - non accepting state - waiting for a space
-q16,StringExpr - non accepting state - waiting for a char or space
-q17,"StringExpr - non accepting state - waiting for a char, "", or space"
-q18,StringExpr - non accepting state - waiting for a space
-q19,StringExpr - non accepting state - waiting for a )
-q20,AssignmentStatement - non accepting state - waiting for an 'a' or space
-q21,AssignmentStatement - non accepting state - waiting for a 'r'
-q22,AssignmentStatement - non accepting state - waiting for a space
-q23,AssignmentStatement - non accepting state - waiting for a char
-q24,AssignmentStatement - accepting state
-q25,VarDeclaration - non accepting state - waiting for a space
-q26,VarDeclaration - non accepting state - waiting for a =
-q27,VarDeclaration - non accepting state - waiting for a space
-q28,"Expr - non accepting state - waiting for a digit, char, or """
-q29,IntExpr - non accepting state - waiting for a space
-q30,IntExpr - non accepting state - waiting for a +
-q31,IntExpr - non accepting state - waiting for a space
-q32,Identifier - accepting state
-q33,StringExpr - non accepting state - waiting for a space
-q34,StringExpr - non accepting state - waiting for a char or space
-q35,"StringExpr - non accepting state - waiting for a char, "", or space"
-q36,StringExpr - accepting state
+q8,"PrintStatement - Expr - non accepting state - waiting for a digit, char, or """
+q9,PrintStatement - IntExpr - non accepting state - waiting for a space
+q10,PrintStatement - IntExpr - non accepting state - waiting for a + or )
+q11,PrintStatement - IntExpr - non accepting state - waiting for a space
+q12,PrintStatement - Expr - accepting state
+q13,PrintStatement - Identifier - non accepting state - waiting for a space
+q14,PrintStatement - Identifier - non accepting state - waiting for a )
+q15,PrintStatement - StringExpr - non accepting state - waiting for a space
+q16,PrintStatement - StringExpr - CharList - non accepting state - waiting for a char or space
+q17,"PrintStatement - StringExpr - CharList - non accepting state - waiting for a char, "", or space"
+q18,PrintStatement - StringExpr - non accepting state - waiting for a space
+q19,PrintStatement - StringExpr - non accepting state - waiting for a )
+q20,VarDeclaration - non accepting state - waiting for an 'a' or space
+q21,VarDeclaration - non accepting state - waiting for a 'r'
+q22,VarDeclaration - non accepting state - waiting for a space
+q23,VarDeclaration - non accepting state - waiting for a char
+q24,VarDeclaration - accepting state
+q25,AssignmentStatement - non accepting state - waiting for a space
+q26,AssignmentStatement - non accepting state - waiting for a =
+q27,AssignmentStatement - non accepting state - waiting for a space
+q28,"AssignmentStatement - Expr - non accepting state - waiting for a digit, char, or """
+q29,AssignmentStatement - IntExpr - non accepting state - waiting for a space
+q30,AssignmentStatement - IntExpr - non accepting state - waiting for a +
+q31,AssignmentStatement - IntExpr - non accepting state - waiting for a space
+q32,AssignmentStatement - Identifier - accepting state
+q33,AssignmentStatement - StringExpr - non accepting state - waiting for a space
+q34,AssignmentStatement - StringExpr - CharList - non accepting state - waiting for a char or space
+q35,"AssignmentStatement - StringExpr - CharList - non accepting state - waiting for a char, "", or space"
+q36,AssignmentStatement - StringExpr - accepting state
 q37,Comment - non accepting state - waiting for a -
 q38,Comment - non accepting state - waiting for a space
-q39,Comment - non accepting state - waiting for a char or space
-q40,"Comment - non accepting state - waiting for a char, -, or space"
+q39,Comment - non accepting state - CharList - waiting for a char or space
+q40,"Comment - non accepting state - CharList - waiting for a char, -, or space"
 q41,Comment - non accepting state - waiting for a *
 q42,Comment - accepting state
 q43,Error - non accepting state
