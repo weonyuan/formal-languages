@@ -116,39 +116,50 @@ public class EspabloDFA {
       
       if (c - 'a' >= 0 && c - 'a' <= 25) {
         // Character is {a-z}
+        System.out.println("character");
         moveInput = c - 'a';
       } else if (c - '0' >= 0 && c - '0' <= 9) {
         // Character is {0-9}
-        moveInput = c - '0';
+        System.out.println("integer");
+        moveInput = (c - '0') + 26;
       } else if (c == '+') {
         // Character is a plus sign
+        System.out.println("plus");
         moveInput = 36;
       } else if (c == '-') {
         // Character is a minus sign
+        System.out.println("minus");
         moveInput = 37;
       } else if (c == '"') {
         // Character is a double quote
+        System.out.println("quote");
         moveInput = 38;
       } else if (c == '*') {
         // Character is an asterisk
+        System.out.println("asterisk");
         moveInput = 39;
       } else if (c == '(') {
         // Character is an open paren
+        System.out.println("open paren");
         moveInput = 40;
       } else if (c == ')') {
         // Character is a closed paren
+        System.out.println("closed paren");
         moveInput = 41;
       } else if (c == '=') {
         // Character is an equal sign
+        System.out.println("equal");
         moveInput = 42;
       } else if (c == ' ') {
         // Character is a whitespace
+        System.out.println("whitespace");
         moveInput = 43;
       }
       
       try {
         currentState = navDFA[currentState][moveInput];
-        System.out.println(currentState);
+        System.out.println(c + " " + currentState);
+        System.out.println();
       } catch (ArrayIndexOutOfBoundsException ex) {
         currentState = q43;
       }
