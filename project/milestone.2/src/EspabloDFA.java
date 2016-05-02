@@ -65,6 +65,7 @@ public class EspabloDFA {
   private static final int q48 = 48;
   private static final int q49 = 49;
   
+  // Start at state q0
   private static int currentState = q0;
   
   private static int [][] navDFA =
@@ -97,7 +98,7 @@ public class EspabloDFA {
     {q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q26, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q26},
     {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49},
     {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q28},
-    {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q33, q49, q49, q49, q29, q49},
+    {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q29, q49},
     {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q30},
     {q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q34, q31, q31, q31, q31, q31, q31, q31, q31, q31, q31, q49, q49, q35, q49, q49, q49, q49, q49},
     {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q32},
@@ -121,10 +122,25 @@ public class EspabloDFA {
     {q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49}  
   };
   
-  public void process(String input) {
+  /**
+   * process
+   * 
+   * This function takes an input that will be scanned character by character
+   * in order to navigate through the delta array.
+   * 
+   * @param input the input string to be processed
+   *   
+   * @return none
+  */
+  public String process(String input) {
+    resetCurrentState();
+    String buffer = "";
+    String htmlContent = "";
+    
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
       int moveInput = -1;
+      buffer += c;
       
       if (c - 'a' >= 0 && c - 'a' <= 25) {
         // Character is {a-z}
@@ -169,13 +185,47 @@ public class EspabloDFA {
       }
       
       try {
+        // Reset the current state to q0 if it is already in an accepted state
+        if (isAccepted()) {
+          resetCurrentState();
+        }
+        htmlContent = formatText(buffer);
         currentState = navDFA[currentState][moveInput];
         System.out.println(c + " " + currentState);
-        System.out.println();
       } catch (ArrayIndexOutOfBoundsException ex) {
-        currentState = q43;
+        currentState = q49;
       }
-      
+    }
+    
+    return htmlContent;
+  }
+  
+  public String formatText(String buffer) {
+    String formattedHTML = "";
+    
+    if (currentState == q5 || currentState == q24) {
+      System.out.println("matched");
+      formattedHTML = "<span style=\"color: #00BCBC;\">" + buffer + "</span>";
+    }
+    
+    return formattedHTML;
+  }
+  
+  public void resetCurrentState() {
+    currentState = q0;
+  }
+  
+  public boolean isAccepted() {
+    switch (currentState) {
+      case q12:
+      case q26:
+      case q31:
+      case q34:
+      case q39:
+      case q47:
+        return true;
+      default:
+        return false;
     }
   }
 }

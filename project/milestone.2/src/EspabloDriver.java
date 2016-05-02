@@ -11,7 +11,6 @@
  *
  */
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,6 +26,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
@@ -35,7 +35,7 @@ import javafx.stage.Stage;
 
 public class EspabloDriver extends Application {
 
-  private Desktop desktop = Desktop.getDesktop();
+  final public HTMLEditor htmlEditor = new HTMLEditor();
   
   @Override
   public void start(Stage stage) {
@@ -43,10 +43,20 @@ public class EspabloDriver extends Application {
     stage.setWidth(400);
     stage.setHeight(300);
     
-    final HTMLEditor htmlEditor = new HTMLEditor();
     htmlEditor.setPrefHeight(245);
-    htmlEditor.setStyle("background-color: #000;");
-    System.out.println(htmlEditor.getStyle());
+    htmlEditor.setOnKeyReleased(new EventHandler<KeyEvent>() {
+      private String buffer = "";
+      
+      @Override
+      public void handle(KeyEvent event) {
+        buffer = htmlEditor.getHtmlText().replaceAll("\\<[^>]*>", "");
+        buffer = buffer.replace("&nbsp;", " ");
+        System.out.println(buffer);
+        validate(buffer);
+      }
+    });
+    
+    renderStyles("");
     
     /*-- Set up menu bar --*/
     VBox optionPane = new VBox(10);
@@ -66,9 +76,11 @@ public class EspabloDriver extends Application {
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
           htmlEditor.setHtmlText(openFile(file.getAbsolutePath()));
+          System.out.println(htmlEditor.getHtmlText());
         }
       }
     });
+    
     /*-- Save file menu item --*/
     MenuItem saveFile = new MenuItem("Save");
 
@@ -92,25 +104,48 @@ public class EspabloDriver extends Application {
     BorderPane layout = new BorderPane();
     layout.setTop(optionPane);
     layout.setCenter(htmlEditor);
-    stage.setScene(new Scene(layout));
+    
+    Scene scene = new Scene(layout);
+    
+    stage.setScene(scene);
     stage.show();
   }
   
-  public String openFile(String filename) {
-    System.out.println(filename);
-    String data = "<body style=\"background-color: gray;\"";
-    
+  public void renderStyles(String input) {
+    String htmlContent =
+        "<body style=\"background-color: #212121;"
+        +             "color: #FFFFFF;"
+        +             "font-family: Consolas;"
+        +             "font-size: 10pt;\">";
+    htmlContent += input;
+    htmlContent += "</body>";
+    htmlEditor.setHtmlText(htmlContent);
+  }
+  
+  public void validate(String buffer) {
+    String htmlContent = "";
+    EspabloDFA dfa = new EspabloDFA();
+    htmlContent = dfa.process(buffer);
+    renderStyles(htmlContent);
+  }
+  
+  public String openFile(String filename) {    
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(filename));
-      String line = null;
+      String data = "<div>";
       
-      while ((line = reader.readLine()) != null) {
+      BufferedReader reader = new BufferedReader(new FileReader(filename));
+      String line = reader.readLine();
+      
+      while (line != null) {
         if (line.contains("\t")) {
           // Replace the tab characters for whitespaces
           line = line.replace("\t", "&nbsp;&nbsp;");
         }
-        data += line + "<br />";
+        data += line + "</div>";
+        line = reader.readLine();
       }
+      
+      reader.close();
       
       return data;
     } catch (IOException ex) {
@@ -125,9 +160,6 @@ public class EspabloDriver extends Application {
   
   public static void main(String[] args) {
     launch(args);
-    
-    //EspabloDFA dfa = new EspabloDFA();
-    //dfa.process("p = \"  \"");
   }
 
 }
