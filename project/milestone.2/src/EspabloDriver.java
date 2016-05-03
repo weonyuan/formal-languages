@@ -1,165 +1,111 @@
-/**
- * @file EspabloDriver.java
- * @author Weon Yuan
- * @course CMPT 440
- * @assignment Project Milestone 2
- * @due date May 2, 2016
- * @version 1.0
- *
- * This file serves as the driver for the user to interact
- * with the Espablo compiler.
- *
- */
+import javax.swing.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.logging.Level;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import com.sun.istack.internal.logging.Logger;
-
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.web.HTMLEditor;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-public class EspabloDriver extends Application {
-
-  final public HTMLEditor htmlEditor = new HTMLEditor();
+public class EspabloDriver extends JPanel 
+ implements KeyListener {
   
-  @Override
-  public void start(Stage stage) {
-    stage.setTitle("Espablo");
-    stage.setWidth(400);
-    stage.setHeight(300);
-    
-    htmlEditor.setPrefHeight(245);
-    htmlEditor.setOnKeyReleased(new EventHandler<KeyEvent>() {
-      private String buffer = "";
-      
-      @Override
-      public void handle(KeyEvent event) {
-        buffer = htmlEditor.getHtmlText().replaceAll("\\<[^>]*>", "");
-        buffer = buffer.replace("&nbsp;", " ");
-        System.out.println(buffer);
-        validate(buffer);
-      }
-    });
-    
-    renderStyles("");
-    
-    /*-- Set up menu bar --*/
-    VBox optionPane = new VBox(10);
-    MenuBar menuBar = new MenuBar();
-    
-    Menu menuFile = new Menu("File");
-    
-    /*-- New file menu item --*/
-    MenuItem newFile = new MenuItem("New");
-    FileChooser fileChooser = new FileChooser();
-    
-    /*-- Load file menu item --*/
-    MenuItem loadFile = new MenuItem("Load");
-    loadFile.setOnAction(new EventHandler<ActionEvent>() {
-      public void handle(final ActionEvent t) {
-        fileChooser.setTitle("Open File");
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-          htmlEditor.setHtmlText(openFile(file.getAbsolutePath()));
-          System.out.println(htmlEditor.getHtmlText());
-        }
-      }
-    });
-    
-    /*-- Save file menu item --*/
-    MenuItem saveFile = new MenuItem("Save");
+  private static final long serialVersionUID = 1L;
+  public JTextPane textPane = new JTextPane();
+  public JEditorPane editorPane = new JEditorPane();
+  final public Color[] colors = {
+    new Color(186, 218, 85),
+    new Color(96, 189, 244),
+    new Color(97, 97, 97)
+  };
+  
+  public EspabloDriver() {
+    setLayout(new BorderLayout());
 
-    /*-- Exit menu item --*/
-    MenuItem exit = new MenuItem("Exit");
-    exit.setOnAction(new EventHandler<ActionEvent>() {
-      public void handle(final ActionEvent t) {
-        System.exit(1);
-      }
-    });
+    // Set up the text pane for coding (hah)
+    textPane.setFont(new Font("Consolas", Font.PLAIN, 12));
+    textPane.setBackground(new Color(51, 51, 51));
+    textPane.setForeground(new Color(255, 255, 255));
+    textPane.setCaretColor(new Color(255, 255, 255));
+    JScrollPane paneScrollPane = new JScrollPane(textPane);
+    paneScrollPane.setVerticalScrollBarPolicy(
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    paneScrollPane.setPreferredSize(new Dimension(320, 420));
+    paneScrollPane.setMinimumSize(new Dimension(10, 10));
     
-    menuFile.getItems().addAll(newFile, loadFile, saveFile, exit);
+    // Set up the editor pane for logging
+    editorPane.setFont(new Font("Consolas", Font.PLAIN, 12));
+    editorPane.setBackground(new Color(51, 51, 51));
+    editorPane.setForeground(new Color(255, 255, 255));
+    JScrollPane editorScrollPane = new JScrollPane(editorPane);
+    editorScrollPane.setVerticalScrollBarPolicy(
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    editorScrollPane.setPreferredSize(new Dimension(250, 420));
+    editorScrollPane.setMinimumSize(new Dimension(10, 10));
+
+    //Put everything together.
+    JPanel leftPane = new JPanel(new BorderLayout());
+    leftPane.add(paneScrollPane);
+    leftPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     
-    Menu menuEdit = new Menu("Edit");
+    JPanel rightPane = new JPanel(new GridLayout(1,0));
+    rightPane.add(editorScrollPane);
+    rightPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    add(leftPane, BorderLayout.LINE_START);
+    add(rightPane, BorderLayout.LINE_END);
     
-    Menu menuHelp = new Menu("Help");
-    
-    menuBar.getMenus().addAll(menuFile, menuEdit, menuHelp);
-    optionPane.getChildren().addAll(menuBar);
-    
-    BorderPane layout = new BorderPane();
-    layout.setTop(optionPane);
-    layout.setCenter(htmlEditor);
-    
-    Scene scene = new Scene(layout);
-    
-    stage.setScene(scene);
-    stage.show();
+    textPane.addKeyListener(this);
   }
-  
-  public void renderStyles(String input) {
-    String htmlContent =
-        "<body style=\"background-color: #212121;"
-        +             "color: #FFFFFF;"
-        +             "font-family: Consolas;"
-        +             "font-size: 10pt;\">";
-    htmlContent += input;
-    htmlContent += "</body>";
-    htmlEditor.setHtmlText(htmlContent);
+
+  /**
+   * For thread safety,
+   * this method should be invoked from the
+   * event dispatch thread.
+   */
+  private static void createAndShowGUI() {
+    //Create and set up the window.
+    JFrame frame = new JFrame("Espablo");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    //Add content to the window.
+    frame.add(new EspabloDriver());
+
+    //Display the window.
+    frame.pack();
+    frame.setVisible(true);
   }
-  
-  public void validate(String buffer) {
-    String htmlContent = "";
+
+  public void validate() {
+    String buffer = textPane.getText();
     EspabloDFA dfa = new EspabloDFA();
-    htmlContent = dfa.process(buffer);
-    renderStyles(htmlContent);
-  }
-  
-  public String openFile(String filename) {    
-    try {
-      String data = "<div>";
-      
-      BufferedReader reader = new BufferedReader(new FileReader(filename));
-      String line = reader.readLine();
-      
-      while (line != null) {
-        if (line.contains("\t")) {
-          // Replace the tab characters for whitespaces
-          line = line.replace("\t", "&nbsp;&nbsp;");
-        }
-        data += line + "</div>";
-        line = reader.readLine();
-      }
-      
-      reader.close();
-      
-      return data;
-    } catch (IOException ex) {
-      Logger.getLogger(
-        EspabloDriver.class.getName(), null).log(
-          Level.SEVERE, null, ex
-      );
-      
-      return null;
+    dfa.process(buffer);
+    
+    if (buffer.length() > 0) {
+      //renderStyles(htmlContent);
     }
   }
   
   public static void main(String[] args) {
-    launch(args);
+    //Schedule a job for the event dispatching thread:
+    //creating and showing this application's GUI.
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        createAndShowGUI();
+      }
+    });
   }
 
+  @Override
+  public void keyReleased(KeyEvent e) {
+    // epsilon
+    validate();
+  }
+  
+  @Override
+  public void keyPressed(KeyEvent e) {
+    // epsilon
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {
+    
+  }
 }

@@ -132,10 +132,11 @@ public class EspabloDFA {
    *   
    * @return none
   */
-  public String process(String input) {
+  public void process(String input) {
     resetCurrentState();
+    
     String buffer = "";
-    String htmlContent = "";
+    System.out.println(input);
     
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
@@ -144,43 +145,33 @@ public class EspabloDFA {
       
       if (c - 'a' >= 0 && c - 'a' <= 25) {
         // Character is {a-z}
-        System.out.println("character");
         moveInput = c - 'a';
       } else if (c - '0' >= 0 && c - '0' <= 9) {
         // Character is {0-9}
-        System.out.println("integer");
         moveInput = (c - '0') + 26;
       } else if (c == '+') {
         // Character is a plus sign
-        System.out.println("plus");
         moveInput = 36;
       } else if (c == '-') {
         // Character is a minus sign
-        System.out.println("minus");
         moveInput = 37;
       } else if (c == '"') {
         // Character is a double quote
-        System.out.println("quote");
         moveInput = 38;
       } else if (c == '*') {
         // Character is an asterisk
-        System.out.println("asterisk");
         moveInput = 39;
       } else if (c == '(') {
         // Character is an open paren
-        System.out.println("open paren");
         moveInput = 40;
       } else if (c == ')') {
         // Character is a closed paren
-        System.out.println("closed paren");
         moveInput = 41;
       } else if (c == '=') {
         // Character is an equal sign
-        System.out.println("equal");
         moveInput = 42;
       } else if (c == ' ') {
         // Character is a whitespace
-        System.out.println("whitespace");
         moveInput = 43;
       }
       
@@ -189,26 +180,35 @@ public class EspabloDFA {
         if (isAccepted()) {
           resetCurrentState();
         }
-        htmlContent = formatText(buffer);
         currentState = navDFA[currentState][moveInput];
+        
+        if (c == ' ') {
+          buffer = "";
+        }
+        
         System.out.println(c + " " + currentState);
       } catch (ArrayIndexOutOfBoundsException ex) {
         currentState = q49;
       }
     }
-    
-    return htmlContent;
   }
   
-  public String formatText(String buffer) {
-    String formattedHTML = "";
+  public int formatText(String buffer) {
+    int colorCode = -1;
+    System.out.println(buffer);
     
     if (currentState == q5 || currentState == q24) {
-      System.out.println("matched");
-      formattedHTML = "<span style=\"color: #00BCBC;\">" + buffer + "</span>";
+      // print | var
+      colorCode = 0;
+    } else if (currentState == q28) {
+      // id | true | false
+      colorCode = 1;
+    } else if (currentState == q42) {
+      // comment
+      colorCode = 2;
     }
     
-    return formattedHTML;
+    return colorCode;
   }
   
   public void resetCurrentState() {
