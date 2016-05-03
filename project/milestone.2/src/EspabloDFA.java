@@ -15,7 +15,7 @@ import javax.swing.text.Highlighter.HighlightPainter;
  * @version 1.0
  *
  * This file contains an abstract class of the DFA
- * for the Espablo compiler.
+ * for the Espablo text editor.
  *
  */
 
@@ -76,8 +76,21 @@ public class EspabloDFA {
   // Start at state q0
   private static int currentState = q0;
   
+  // These indices are used for indicating the
+  // starting and ending parts of the line being validated
   private static int startIndex = 0;
   private static int endIndex = 0;
+  
+  /*
+   * Constants for highlighting colors
+   * 
+   * Taking the colors constants from the EspabloDriver class.
+   * Color 0 - White (default)
+   * Color 1 - Lime green (for declarations and statements)
+   * Color 2 - Sky blue (for assignments)
+   * Color 3 - Light gray (for comments)
+   * Color 4 - Red (for errors)
+   */
   private final static HighlightPainter[] painters = {
       new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[0]),
       new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[1]),
@@ -86,6 +99,7 @@ public class EspabloDFA {
       new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[4])
   };
   
+  // DFA for Espablo
   private static int [][] navDFA =
   {
     {q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27,  q1, q27, q27, q27, q27, q27, q22, q27, q27, q27, q27, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q41, q49, q49, q49, q49},
@@ -238,10 +252,24 @@ public class EspabloDFA {
     } 
   }
   
+  /*
+   * resetCurrentState
+   * 
+   * Resets the current state for the DFA navigation.
+   * 
+   * @return none
+   */
   public void resetCurrentState() {
     currentState = q0;
   }
   
+  /*
+   * isAccepted
+   * 
+   * Checks to whether the current state is an accepted state.
+   * 
+   * @return an integer indicating the color coding
+   */
   public int isAccepted() {
     switch (currentState) {
       case q12:
