@@ -1,3 +1,11 @@
+import java.awt.Color;
+import java.util.ArrayList;
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
+
 /**
  * @file EspabloDFA.java
  * @author Weon Yuan
@@ -68,6 +76,16 @@ public class EspabloDFA {
   // Start at state q0
   private static int currentState = q0;
   
+  private static int startIndex = 0;
+  private static int endIndex = 0;
+  private final static HighlightPainter[] painters = {
+      new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[0]),
+      new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[1]),
+      new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[2]),
+      new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[3]),
+      new DefaultHighlighter.DefaultHighlightPainter(EspabloDriver.colors[4])
+  };
+  
   private static int [][] navDFA =
   {
     {q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27, q27,  q1, q27, q27, q27, q27, q27, q22, q27, q27, q27, q27, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q49, q41, q49, q49, q49, q49},
@@ -133,15 +151,22 @@ public class EspabloDFA {
    * @return none
   */
   public void process(String input) {
+    input = input.replace("\n", "P").replace("\r", "");
     resetCurrentState();
     
-    String buffer = "";
-    System.out.println(input);
+    int highlightColor = 0;
+    Highlighter highlighter = EspabloDriver.textPane.getHighlighter();
+    highlighter.removeAllHighlights();
+    
+    String chunk = "";
+    startIndex = 0;
+    endIndex = 0;
     
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
+      
       int moveInput = -1;
-      buffer += c;
+      chunk += c;
       
       if (c - 'a' >= 0 && c - 'a' <= 25) {
         // Character is {a-z}
@@ -176,56 +201,60 @@ public class EspabloDFA {
       }
       
       try {
-        // Reset the current state to q0 if it is already in an accepted state
-        if (isAccepted()) {
-          resetCurrentState();
-        }
-        currentState = navDFA[currentState][moveInput];
-        
-        if (c == ' ') {
-          buffer = "";
+        if (c == 'P') {
+          
+          highlightColor = isAccepted();
+          System.out.println(highlightColor);
+          if (endIndex != 0) {
+            startIndex = endIndex;
+          }
+          
+          if (startIndex == 0) {
+            endIndex = startIndex + chunk.length() - 1;
+          } else {
+            endIndex = startIndex + chunk.length();
+          }
+          
+          // Reset the current state to q0 if it is already in an accepted state
+          if (highlightColor != 0) {
+            if (currentState == q31 && c == ' ') {
+              // Do nothing. Don't reset the current state...yet
+            } else {
+              highlighter.addHighlight(startIndex, endIndex, painters[highlightColor]);
+              chunk = "";
+              resetCurrentState();
+            }
+          }
+        } else {
+          currentState = navDFA[currentState][moveInput];
         }
         
         System.out.println(c + " " + currentState);
       } catch (ArrayIndexOutOfBoundsException ex) {
         currentState = q49;
+      } catch (BadLocationException e) {
+        e.printStackTrace();
       }
-    }
-  }
-  
-  public int formatText(String buffer) {
-    int colorCode = -1;
-    System.out.println(buffer);
-    
-    if (currentState == q5 || currentState == q24) {
-      // print | var
-      colorCode = 0;
-    } else if (currentState == q28) {
-      // id | true | false
-      colorCode = 1;
-    } else if (currentState == q42) {
-      // comment
-      colorCode = 2;
-    }
-    
-    return colorCode;
+    } 
   }
   
   public void resetCurrentState() {
     currentState = q0;
   }
   
-  public boolean isAccepted() {
+  public int isAccepted() {
     switch (currentState) {
       case q12:
-      case q26:
       case q31:
       case q34:
       case q39:
+        return 1;
+      case q26:
+        return 2;
       case q47:
-        return true;
+        return 3;
       default:
-        return false;
+        return 4;
     }
   }
 }
