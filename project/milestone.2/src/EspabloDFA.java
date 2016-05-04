@@ -228,14 +228,15 @@ public class EspabloDFA {
           } else {
             endIndex = startIndex + chunk.length();
           }
-          
           if (highlightColor != 0) {
             if (currentState == q31 && c == ' ') {
               // Do nothing. Don't reset the current state...yet
             } else {
-              // Add the highlight for the line
-              highlighter.addHighlight(startIndex, endIndex, painters[highlightColor]);
-              
+              if (!chunk.matches("/^P+$/")) {
+                // Add the highlight for the line
+                highlighter.addHighlight(startIndex, endIndex, painters[highlightColor]);
+              }
+
               // Reset the chunk and the current state
               chunk = "";
               resetCurrentState();
@@ -284,6 +285,8 @@ public class EspabloDFA {
         return 2;
       case q47:
         return 3;
+      case q0:
+        return 0;
       default:
         return 4;
     }
