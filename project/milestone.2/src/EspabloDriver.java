@@ -1,14 +1,20 @@
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * @file EspabloDriver.java
@@ -24,7 +30,7 @@ import java.util.ArrayList;
  */
 
 public class EspabloDriver extends JPanel 
- implements KeyListener {
+ implements ActionListener, KeyListener {
   
   private static final long serialVersionUID = 1L;
   
@@ -32,6 +38,7 @@ public class EspabloDriver extends JPanel
   final static DefaultStyledDocument doc = new DefaultStyledDocument(sc);
   public static JTextPane textPane = new JTextPane(doc);
   public JEditorPane editorPane = new JEditorPane();
+  public static JMenuBar menuBar = new JMenuBar();
   
   // Set color constants for highlighting
   public static final Color[] colors = {
@@ -49,6 +56,39 @@ public class EspabloDriver extends JPanel
   public EspabloDriver() {
     setLayout(new BorderLayout());
 
+    // Set up the menu bar
+    JMenu menuFile = new JMenu("File");
+    menuBar.add(menuFile);
+    
+    /*-- New file menu item --*/
+    JMenuItem newFile = new JMenuItem("New");
+    KeyStroke ctrlN = KeyStroke.getKeyStroke(KeyEvent.VK_N,
+      Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask());
+    newFile.setAccelerator(ctrlN);
+    newFile.addActionListener(this);
+    menuFile.add(newFile);
+    
+    /*-- Load file menu item --*/
+    JMenuItem loadFile = new JMenuItem("Load");
+    KeyStroke ctrlO = KeyStroke.getKeyStroke(KeyEvent.VK_O,
+      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    loadFile.setAccelerator(ctrlO);
+    loadFile.addActionListener(this);
+    menuFile.add(loadFile);
+    
+    /*-- Save file menu item --*/
+    JMenuItem saveFile = new JMenuItem("Save");
+    KeyStroke ctrlS = KeyStroke.getKeyStroke(KeyEvent.VK_S,
+      Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask());
+    saveFile.setAccelerator(ctrlS);
+    saveFile.addActionListener(this);
+    menuFile.add(saveFile);
+    
+    /*-- Exit menu item --*/
+    JMenuItem exit = new JMenuItem("Exit");
+    exit.addActionListener(this);
+    menuFile.add(exit);
+    
     // Add side indents to the text pane
     StyleConstants.setLeftIndent(mainStyle, 5);
     StyleConstants.setRightIndent(mainStyle, 5);
@@ -85,6 +125,7 @@ public class EspabloDriver extends JPanel
   private static void createAndShowGUI() {
     //Create and set up the window.
     JFrame frame = new JFrame("Espablo");
+    frame.setJMenuBar(menuBar);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     //Add content to the window.
@@ -160,5 +201,113 @@ public class EspabloDriver extends JPanel
   @Override
   public void keyTyped(KeyEvent e) {
     // epsilon
+  }
+
+  /*
+   * actionPerformed
+   * 
+   * Automatically generated. Called when a menu
+   * item is selected.
+   * 
+   * @return none
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    String command = e.getActionCommand();
+    
+    if (command == "New") {
+      // If there is content in the text pane, pop up a save confirmation
+      if (textPane.getText().length() > 0) {
+        int dialog = JOptionPane.showConfirmDialog(null, "This file has been modified. Save changes?");
+        if (dialog == JOptionPane.YES_OPTION) {
+          JFileChooser fileChooser = new JFileChooser();
+          fileChooser.setDialogTitle("Save File");
+          int fileDialog = fileChooser.showSaveDialog(null);
+          if (fileDialog == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            saveFile(file);
+            
+            // Clear the text pane after saving
+            textPane.setText("");
+          }
+        } else if (dialog == JOptionPane.NO_OPTION) {
+          // The user chose not to save the file
+          textPane.setText("");
+        }
+      } else {
+        // Otherwise, just clear the text pane
+        textPane.setText("");
+      }
+    } else if (command == "Load") {
+      JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setDialogTitle("Open File");
+      int fileDialog = fileChooser.showOpenDialog(null);
+      if (fileDialog == JFileChooser.APPROVE_OPTION) {
+        File file = fileChooser.getSelectedFile();
+        textPane.setText(openFile(file.getAbsolutePath()));
+      }
+    } else if (command == "Save") {
+      JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setDialogTitle("Save File");
+      int fileDialog = fileChooser.showSaveDialog(null);
+      if (fileDialog == JFileChooser.APPROVE_OPTION) {
+        File file = fileChooser.getSelectedFile();
+        saveFile(file);
+      }
+    } else if (command == "Exit") {
+      System.exit(1);
+    }
+  }
+  
+  /*
+   * openFile
+   * 
+   * Opens the content of a text file and
+   * writes them char by char into the text pane.
+   * 
+   * @param filename the filename
+   * @return none
+   */
+  public String openFile(String filename) {    
+    try {
+      String data = "";
+      
+      BufferedReader reader = new BufferedReader(new FileReader(filename));
+      String line = reader.readLine();
+      
+      while (line != null) {
+        data += line + "\n";
+        
+        // Read the next line
+        line = reader.readLine();
+      }
+      
+      reader.close();
+      
+      return data;
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      
+      return null;
+    }
+  }
+  
+  /*
+   * saveFile
+   * 
+   * Writes the content from the text pane over
+   * to the destined filename.
+   * 
+   * @param file the File object
+   * @return none
+   */
+  public void saveFile(File file) {    
+    try {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+      writer.write(textPane.getText());
+      writer.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
   }
 }

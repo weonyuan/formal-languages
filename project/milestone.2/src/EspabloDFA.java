@@ -1,6 +1,3 @@
-import java.awt.Color;
-import java.util.ArrayList;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -176,6 +173,8 @@ public class EspabloDFA {
     startIndex = 0;
     endIndex = 0;
     
+    // Traverse through the entire text and navigate the DFA
+    // char by char
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
       
@@ -215,26 +214,29 @@ public class EspabloDFA {
       }
       
       try {
+        // P for Pablo
         if (c == 'P') {
-          
           highlightColor = isAccepted();
-          System.out.println(highlightColor);
           if (endIndex != 0) {
             startIndex = endIndex;
           }
           
+          // This is set up due to the way Windows has two characters
+          // for newlines, which is frankly frustrating
           if (startIndex == 0) {
             endIndex = startIndex + chunk.length() - 1;
           } else {
             endIndex = startIndex + chunk.length();
           }
           
-          // Reset the current state to q0 if it is already in an accepted state
           if (highlightColor != 0) {
             if (currentState == q31 && c == ' ') {
               // Do nothing. Don't reset the current state...yet
             } else {
+              // Add the highlight for the line
               highlighter.addHighlight(startIndex, endIndex, painters[highlightColor]);
+              
+              // Reset the chunk and the current state
               chunk = "";
               resetCurrentState();
             }
@@ -243,7 +245,8 @@ public class EspabloDFA {
           currentState = navDFA[currentState][moveInput];
         }
         
-        System.out.println(c + " " + currentState);
+        // For debugging purposes
+        // System.out.println(c + " " + currentState);
       } catch (ArrayIndexOutOfBoundsException ex) {
         currentState = q49;
       } catch (BadLocationException e) {
