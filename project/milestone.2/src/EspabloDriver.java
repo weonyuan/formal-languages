@@ -245,6 +245,7 @@ public class EspabloDriver extends JPanel
       if (fileDialog == JFileChooser.APPROVE_OPTION) {
         File file = fileChooser.getSelectedFile();
         textPane.setText(openFile(file.getAbsolutePath()));
+        validate();
       }
     } else if (command == "Save") {
       JFileChooser fileChooser = new JFileChooser();
